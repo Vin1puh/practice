@@ -1,0 +1,36 @@
+@import "tailwindcss";
+*{
+  margin: 0;
+  padding: 0;
+}
+html{
+  font-size: 10px;
+  font-weight: 500;
+  font-family: sans-serif;
+  scroll-behavior: smooth;
+}
+body{
+  background: #FAFAFA;
+}
+button{
+  cursor: pointer;
+  transition: 0.33s;
+}
+button:hover{
+  scale: 1.05;
+}
+input{
+  cursor: pointer;
+}
+main{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  position: relative;
+  top: 88px;
+}
+footer{
+  position: relative;
+  top: 88px;
+}
