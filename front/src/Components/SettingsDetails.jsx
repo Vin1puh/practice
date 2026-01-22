@@ -9,7 +9,7 @@ export default function SettingsDetails(props){
     }
 
     return (
-        <div className='w-7/10 rounded-2xl bg-white flex flex-col items-center overflow-hidden'>
+        <div className='w-95/100 lg:w-7/10 rounded-2xl bg-white flex flex-col items-center overflow-hidden'>
             <div onClick={handleOpen} className='w-95/100 h-[80px] flex justify-between items-center cursor-pointer'>
                 <h2 className='text-[3rem]'>{props.title}</h2>
                 <img src={Images.greenArrow} alt="" className={`duration-330 ${open ? 'rotate-180' : ''}`}/>
@@ -53,7 +53,7 @@ export default function SettingsDetails(props){
             {props.isConfig && open && (
                 <div className='h-[300px] w-full bg-white border-t-[1px] border-gray-200 flex justify-center items-center'>
                     <div className='w-95/100 h-8/10 flex flex-col justify-between items-start'>
-                        <p className='text-[2rem] w-4/10'>Тут вы можете поменять информацию про компанию, которую видят ваши клиенты </p>
+                        <p className='text-[2rem] w-full md:w-1/2 lg:w-4/10'>Тут вы можете поменять информацию про компанию, которую видят ваши клиенты </p>
                         <div className='w-full h-[210px] flex items-start justify-between flex-col'>
                             <div className='flex flex-col items-start justify-between w-full h-full'>
                                 <div className='w-75/100 h-[100px] flex items-center justify-between'>

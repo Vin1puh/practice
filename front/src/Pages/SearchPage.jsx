@@ -1,10 +1,17 @@
 import {Images} from "../../Images.js";
 import Filter from "../Components/Filter.jsx";
 import StarsCarsCard from "../Components/StarsCarsCard.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-export default function SearchPage(props) {
+export default function SearchPage() {
     const [slice, setSlice] = useState(6);
+    const [carData, setCarData] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/cars")
+            .then(res =>  res.json())
+            .then(data => setCarData(data))
+    }, [])
 
     const handleClick = () => {
         setSlice((prev) => prev + 6);
@@ -13,18 +20,15 @@ export default function SearchPage(props) {
     return (
         <main>
             <div className='h-[50px]'></div>
-            <div className='w-7/10 flex justify-between items-start'>
+            <div className='w-95/100 lg:w-7/10 flex flex-col md:flex-row justify-between items-start'>
                 <Filter />
-                <div className='flex flex-col justify-between items-start w-7/10'>
+                <div className='flex flex-col justify-between items-start w-95/100 md:w-7/10'>
                     <div className='flex w-full flex-wrap h-[50px]'>
 
                     </div>
                     <div className='w-full grid grid-cols-2 gap-x-4'>
-                        {[...Array(12)].slice(0, slice).map((_, index) => (
-                            <StarsCarsCard key={index} photo={Images.Car} location='Garage van NieropNetherlands'
-                                           price='1000$' name='Opel COMBO Airco Elct Ramen Stuurbediening'
-                                           way='Закрытые грузопассажирские автомобили' year='2015' weight='2 000 kg'
-                                           runed='490 574 km'/>
+                        {carData.slice(0, slice).map((item, index) => (
+                            <StarsCarsCard key={index} {...item}/>
                         ))}
                     </div>
                     <div className='w-full h-[60px] flex justify-center'>

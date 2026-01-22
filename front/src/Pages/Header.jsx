@@ -35,14 +35,14 @@ export default function Header({count}) {
     return (
         <header className='w-full h-[88px] flex justify-center items-center fixed z-1000 bg-white border-b-[#eee] border-b-[1px]'>
             {isSearch ? (
-                <div className='w-7/10 h-2/3 flex justify-between items-center'>
+                <div className='w-95/100 lg:w-7/10 h-2/3 flex justify-between items-center'>
                     <img src={Images.graySearch} alt=""/>
                     <input onKeyDown={(e) => e.key === 'Enter' && handleNavigate()} type="text" className='w-95/100 h-1/2 outline-0 text-[1.6rem] placeholder-gray-500' placeholder='Введите ваш запрос'/>
                     <img onClick={handleSearch} src={Images.plus} className='rotate-45 h-[20px] cursor-pointer' alt=""/>
                 </div>
             ) : (
-                <div className='w-7/10 h-2/3 flex justify-between items-center'>
-                    <div className='flex items-center justify-between w-3/10'>
+                <div className='w-95/100 lg:w-7/10 h-2/3 flex justify-between items-center'>
+                    <div className='flex items-center justify-between w-4/10 md:w-3/10'>
                         <NavLink to='/'><img src={Images.Logo} alt=""/></NavLink>
                         <details className='text-[1.6rem] cursor-pointer'>
                             <summary>Русский</summary>
@@ -52,7 +52,7 @@ export default function Header({count}) {
                         </details>
                         <p onClick={handleSearch} className='text-[1.6rem] cursor-pointer'>Поиск</p>
                     </div>
-                    <div className='flex items-center justify-between w-25/100 h-full'>
+                    <div className='flex items-center justify-between w-4/10 md:w-3/10 2xl:w-25/100 h-full'>
                         <div onMouseEnter={handleHover} onMouseLeave={handleLeave}
                              className='w-[120px] h-full relative flex flex-col items-center justify-between'>
                             {isRegister ? (

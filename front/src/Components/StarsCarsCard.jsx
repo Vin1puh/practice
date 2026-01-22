@@ -5,7 +5,7 @@ export default  function StarsCarsCard(props) {
     return (
         <NavLink to='/car_page' state={{carData: props}} className='bg-white w-full h-[500px] mb-[3rem]! flex justify-center items-center rounded-[1rem] cursor-pointer'>
             <div className='flex items-center justify-between flex-col w-9/10 h-95/100'>
-                <img src={props.image} alt="" className='w-full max-h-5/10 object-cover rounded-[1rem]'/>
+                <img src={props.image} alt="" className='w-full h-5/10 object-cover rounded-[1rem]'/>
                 <div className='flex flex-col justify-around items-center w-full h-5/10'>
                     <p className='text-gray-500 w-full text-[1.6rem]'>{props.stat}</p>
                     <h3 className='w-full text-[2rem]'>{props.mark} {props.model}</h3>

@@ -50,7 +50,7 @@ export default function Profile({count}) {
     return(
         <main>
             {location.pathname === "/profile/enter" ? (
-                <div className='w-3/10 h-[650px] my-32! flex flex-col items-center justify-between'>
+                <div className='w=1/2 md:w-3/10 h-[650px] my-32! flex flex-col items-center justify-between'>
                     <div className='bg-white rounded-2xl w-full h-9/10 flex items-center justify-center'>
                         <div className='flex flex-col items-center justify-between w-8/10 h-8/10'>
                             <h1 className='text-[5rem] font-bold'>Вход в акаунт</h1>
@@ -68,7 +68,7 @@ export default function Profile({count}) {
                     <h2 className='text-[2rem]'>Нет аккаунта? <NavLink to='/profile/register' className='text-[#009661] uppercase'>Рeгистрация</NavLink></h2>
                 </div>
             ) : location.pathname === "/profile/register" ? (
-                <div className='w-3/10 h-[900px] my-32! flex flex-col items-center justify-between'>
+                <div className='w-1/2 md:w-3/10 h-[900px] my-32! flex flex-col items-center justify-between'>
                     <div className='bg-white rounded-2xl w-full h-95/100 flex items-center justify-center'>
                         <div className='flex flex-col items-center justify-between w-8/10 h-9/10'>
                             <h1 className='text-[5rem] font-bold'>Регистрация</h1>
@@ -105,7 +105,7 @@ export default function Profile({count}) {
             ) : (
                 <>
                     <div className='w-full h-[230px] flex justify-center items-center bg-white'>
-                        <div className='w-7/10 h-full flex justify-between items-start flex-col'>
+                        <div className='w-95/100 lg:w-7/10 h-full flex justify-between items-start flex-col'>
                             <div className='h-[50px]'>
 
                             </div>
@@ -118,7 +118,7 @@ export default function Profile({count}) {
                             {location.pathname === '/profile/settings' && (
                                 <h1 className='text-[5rem] font-bold'>Настройки профиля</h1>
                             )}
-                            <div className='flex items-center justify-between w-[640px] h-[50px]'>
+                            <div className='flex items-center justify-between w-[500px] lg:w-[640px] h-[50px]'>
                                 <NavLink to='stars' className={`h-full text-[2rem] font-bold flex items-center
                         ${location.pathname === '/profile/stars' ? 'border-b-4 border-[#009661]': ''}`}
                                 >Избранное</NavLink>
@@ -134,7 +134,7 @@ export default function Profile({count}) {
                     <div className='h-[50px]'></div>
                     {location.pathname === '/profile/stars' && (
                         <>
-                            <div className='w-7/10 h-[75px] flex items-center justify-center bg-white rounded-[1rem]'>
+                            <div className='w-95/100 lg:w-7/10 h-[75px] flex items-center justify-center bg-white rounded-[1rem]'>
                                 <div className='w-9/10 h-full flex justify-between items-center'>
                                     <img src={Images.search} alt="" className='h-1/2'/>
                                     <input type="text" placeholder='Поиск по объявлениям'
@@ -142,7 +142,7 @@ export default function Profile({count}) {
                                 </div>
                             </div>
                             <div className='h-[20px]'></div>
-                            <div className='grid grid-cols-3 gap-x-12 w-7/10'>
+                            <div className='grid grid-cols-2 md:grid-cols-3 gap-x-12 w-95/100 lg:w-7/10'>
                                 {cardData.slice(0, slice).map((item, index) => (
                                     <StarsCarsCard key={index} {...item}/>
                                 ))}
@@ -156,7 +156,7 @@ export default function Profile({count}) {
                     )}
                     {location.pathname === '/profile/messages' && (
                         <>
-                            <div className='w-7/10 h-[75px] rounded-2xl flex items-center justify-center bg-white'>
+                            <div className='w-95/100 lg:w-7/10 h-[75px] rounded-2xl flex items-center justify-center bg-white'>
                                 <div className='w-95/100 h-1/2 flex justify-between items-center'>
                                     <CustomInput bg='red' border='red' checked='red'/>
                                     <div className='w-15/100 h-full flex items-center justify-start'>
@@ -174,13 +174,13 @@ export default function Profile({count}) {
                                 </div>
                             </div>
                             <div className='h-[50px]'></div>
-                            <div className='w-7/10 max-h-[700px] bg-white rounded-2xl flex flex-col items-center'>
+                            <div className='w-95/100 lg:w-7/10 max-h-[700px] bg-white rounded-2xl flex flex-col items-center'>
                                 {[...Array(17)].slice(oldMessageSlice, messageSlice).map((_, index) => (
                                     <MessageLine key={index} user='Игорь Игорьевич' name='SCHWARZMUELLER 3Achs Stahl path SCHWARZMUELLER 3Achs Stahl' count={count} index={index} time='19:56'/>
                                 ))}
                             </div>
                             <div className='h-[50px]'></div>
-                            <div className='w-7/10 h-[50px] flex items-center justify-between'>
+                            <div className='w-95/100 lg:w-7/10 h-[50px] flex items-center justify-between'>
                                 <button className='w-[160px] h-full rounded-2xl bg-[#EB5757]/[0.2] text-[#EB5757] text-[2rem] flex justify-evenly items-center'><img className='h-1/2' src={Images.garbage} alt=""/> Удалить</button>
                                 <div className='w-[230px] h-full flex items-center justify-between'>
                                     <button
@@ -199,7 +199,7 @@ export default function Profile({count}) {
                     )}
                     {location.pathname === '/profile/settings' && (
                         <>
-                            <div className='w-7/10 h-[70px] flex flex-col justify-between items-start'>
+                            <div className='w-95/100 lg:w-7/10 h-[70px] flex flex-col justify-between items-start'>
                                 <h2 className='text-[3rem]'>Профиль mail@gmail.com</h2>
                                 <NavLink to='/profile/enter' className='text-[2rem] text-[#009661]'>Выйти из аккаунта</NavLink>
                             </div>

@@ -34,7 +34,7 @@ export default function SellerPage() {
             ) : (
                 <>
                     <div className='w-full bg-white h-[280px] flex justify-center items-center'>
-                        <div className='w-7/10 h-8/10 flex flex-col items-start justify-between'>
+                        <div className='w-95/100 lg:w-7/10 h-8/10 flex flex-col items-start justify-between'>
                             <div className='h-[50px]'>
 
                             </div>
@@ -51,9 +51,9 @@ export default function SellerPage() {
                         </div>
                     </div>
                     <div className='h-[50px]'></div>
-                    <div className='w-7/10 flex justify-between items-start'>
+                    <div className='w-95/100 lg:w-7/10 flex flex-col md:flex-row justify-between items-start'>
                         <Filter/>
-                        <div className='flex flex-col justify-between items-start w-7/10'>
+                        <div className='flex flex-col justify-between items-start w-full md:w-7/10'>
                             <div className='flex w-full flex-wrap h-[50px]'>
 
                             </div>
@@ -72,11 +72,11 @@ export default function SellerPage() {
                     </div>
                     <div className='h-[50px]'></div>
                     <div className='w-full bg-white h-[500px] flex justify-center items-center'>
-                        <div className='w-7/10 h-8/10 flex flex-col items-start justify-between'>
+                        <div className='w-95/100 lg:w-7/10 h-8/10 flex flex-col items-start justify-between'>
                             <h1 className='text-[3rem]'>Продавец {dataFromState.seller}</h1>
-                            <div className='w-8/10 flex flex-col items-start justify-between'>
-                                <h2 className='text-[2rem] mb-4!'>Кто таки ОТП Лизинг?</h2>
-                                <p className='text-[1.6rem] text-gray-500'>«ОТП Лізинг» – універсальна лізингова
+                            <div className='w-95/100 lg:w-8/10 flex flex-col items-start justify-between'>
+                                <h2 className='text-[2rem] mb-4!'>Кто таки {dataFromState.seller}?</h2>
+                                <p className='text-[1.6rem] text-gray-500'>«{dataFromState.seller}» – універсальна лізингова
                                     компанія, входить до складу
                                     європейської фінансової групи OTP Group, яка протягом десятиліть має надійну
                                     репутацію в усій Европі.
@@ -87,7 +87,7 @@ export default function SellerPage() {
                                     котируються на Лондонській фондовій біржі. Портфель компанії на вересень 2019 року
                                     становить 8,2 млрд. грн</p>
                             </div>
-                            <div className='w-8/10 flex flex-col items-start justify-between'>
+                            <div className='w-95/100 lg:w-8/10 flex flex-col items-start justify-between'>
                                 <h2 className='text-[2rem] mb-4!'>Ну и еще пример текста</h2>
                                 <p className='text-[1.6rem] text-gray-500'>Предварительные выводы неутешительны:
                                     перспективное планирование в
@@ -97,7 +97,7 @@ export default function SellerPage() {
                     </div>
                     <div className='relative w-full h-[620px] flex items-center'>
                         <div
-                            className='left-15/100 absolute w-1/5 h-8/10 rounded-2xl bg-white flex justify-center items-center'>
+                            className='left-25/1000 md:left-5/100 lg:left-15/100 absolute w-1/2 md:w-1/3 lg:w-1/5 h-8/10 rounded-2xl bg-white flex justify-center items-center'>
                             <div className='w-8/10 h-9/10 flex flex-col items-start justify-between'>
                                 <h2 className='text-[3rem] text-[#009661]'>Контакты</h2>
                                 <div className='w-full flex items-center'>

@@ -34,3 +34,28 @@ footer{
   position: relative;
   top: 88px;
 }
+@media (min-width: 1536px) {
+  html{
+    font-size: 9px;
+  }
+}
+@media (min-width: 1280px) {
+  html{
+    font-size: 8px;
+  }
+}
+@media (min-width: 1024px) {
+  html{
+    font-size: 7px;
+  }
+}
+@media (min-width: 768px) {
+  html{
+    font-size: 8px;
+  }
+}
+@media (min-width: 6400px) {
+  html{
+    font-size: 7px;
+  }
+}
