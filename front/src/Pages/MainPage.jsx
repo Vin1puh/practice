@@ -3,6 +3,7 @@ import {Images} from "../../Images.js";
 import InputForForm from "../Components/InputForForm.jsx";
 import TopCarsCard from "../Components/TopCarsCard.jsx";
 import {NavLink} from "react-router-dom";
+import {data} from "autoprefixer";
 
 export default function MainPage() {
     const buttons = [
@@ -12,16 +13,85 @@ export default function MainPage() {
         {id: 4, label: 'Погрузочное оборудование'},
     ]
 
-    const [results, setResults] = useState(10);
+    const [results, setResults] = useState();
     const [isActive, setIsActive] = useState(1);
     const [slice, setSlice] = useState(8);
     const [Card, setCard] = useState([]);
+    const [filtredData, setFiltredData] = useState([]);
+    const [filterOptions, setFilterOptions] = useState({});
+    const [filter, setFilter] = useState({
+        category: '',
+        country: '',
+        mark: '',
+        model: '',
+        year: '',
+        price: '',
+        runned: '',
+        weight: ''
+    });
 
     useEffect(() => {
         fetch('http://localhost:3000/cars')
             .then(res => res.json())
             .then(data => setCard(data))
-    })
+        fetchFilterOptions();
+    }, [])
+
+    useEffect(() => {
+        const hasFilters = Object.values(filter).some(v => v !== '');
+
+        if (hasFilters) {
+            const timeoutId = setTimeout(() => {
+                fetchFilteredCars();
+            }, 100);
+
+            return () => clearTimeout(timeoutId);
+        } else {
+            fetch('http://localhost:3000/cars')
+                .then(res => res.json())
+                .then(data => setCard(data))
+        }
+    }, [filter]);
+
+    const fetchFilterOptions = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/filter-options');
+            const data = await response.json();
+            setFilterOptions(data);
+        } catch (error) {
+            console.error('Error fetching filter options:', error);
+        }
+    };
+
+    const fetchFilteredCars = async () => {
+        try {
+            const activeFilters = Object.fromEntries(
+                Object.entries(filter).filter(([_, value]) =>
+                    value !== '' && value !== null && value !== undefined
+                )
+            );
+            const response = await fetch('http://localhost:3000/api/filter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(activeFilters)
+            });
+
+            const data = await response.json();
+            setFiltredData(data);
+            setResults(data.length);
+        } catch (error) {
+            console.error('Error fetching filtered cars:', error);
+        }
+    };
+
+    const handleFilterChange = (filterName, value) => {
+        setFilter(prev => ({
+            ...prev,
+            [filterName]: value
+        }));
+    };
 
     const handleClick = ()  => {
         setSlice((prev) => prev + 8);
@@ -45,19 +115,67 @@ export default function MainPage() {
                         <form className='flex bg-white w-full justify-center items-center h-[500px] rounded-[1rem]'
                               action="">
                             <div className='w-9/10 h-95/100 flex flex-wrap justify-between'>
-                                <InputForForm title='Грузовики' label='Категория'/>
-                                <InputForForm title='Франция; Италия' label='Страна'/>
-                                <InputForForm title='Renault ' label='Марка'/>
-                                <InputForForm title='Premium 420HP' label='Модель'/>
-                                <InputForForm title='2011' label='Год (начиная с)'/>
-                                <InputForForm title='15000' label='Цена до (EUR)'/>
-                                <InputForForm title='210000' label='Пробег до (km)'/>
-                                <InputForForm title='8000' label='Вес до (kg)'/>
+                                <InputForForm
+                                    title="Категория"
+                                    label="Категория"
+                                    items={filterOptions.category || []}
+                                    value={filter.category}
+                                    onSelect={(value) => handleFilterChange('category', value)}
+                                />
+                                <InputForForm
+                                    title="Страна"
+                                    label="Страна"
+                                    items={filterOptions.country || []}
+                                    value={filter.country}
+                                    onSelect={(value) => handleFilterChange('country', value)}
+                                />
+                                <InputForForm
+                                    title="Марка"
+                                    label="Марка"
+                                    items={filterOptions.mark || []}
+                                    value={filter.mark}
+                                    onSelect={(value) => handleFilterChange('mark', value)}
+                                />
+                                <InputForForm
+                                    title="Модель"
+                                    label="Модель"
+                                    items={filterOptions.model || []}
+                                    value={filter.model}
+                                    onSelect={(value) => handleFilterChange('model', value)}
+                                />
+                                <InputForForm
+                                    title="Год"
+                                    label="Год (начиная с)"
+                                    items={filterOptions.year ? [...new Set(filterOptions.year)].sort() : []}
+                                    value={filter.year}
+                                    onSelect={(value) => handleFilterChange('year', value)}
+                                />
+                                <InputForForm
+                                    title="Цена"
+                                    label="Цена до (EUR)"
+                                    items={filterOptions.price ? [...new Set(filterOptions.price)].sort((a, b) => a - b) : []}
+                                    value={filter.price}
+                                    onSelect={(value) => handleFilterChange('price', value)}
+                                />
+                                <InputForForm
+                                    title="Пробег"
+                                    label="Пробег до (km)"
+                                    items={filterOptions.runned ? [...new Set(filterOptions.runned)].sort((a, b) => a - b) : []}
+                                    value={filter.runned}
+                                    onSelect={(value) => handleFilterChange('runned', value)}
+                                />
+                                <InputForForm
+                                    title="Вес"
+                                    label="Вес до (kg)"
+                                    items={filterOptions.weight ? [...new Set(filterOptions.weight)].sort((a, b) => a - b) : []}
+                                    value={filter.weight}
+                                    onSelect={(value) => handleFilterChange('weight', value)}
+                                />
                             </div>
                         </form>
-                        <NavLink to='/search'
+                        <NavLink to='/search' state={{carData: filtredData.length <= 0 ? Card : filtredData}}
                                  className='w-[300px] h-[60px] bg-[#009661] rounded-[1rem] text-white text-[2rem] flex items-center justify-center duration-330 hover:scale-[1.05]'>
-                            Поиск ({results} Результатов)
+                            Поиск ({filtredData.length <= 0 ? Card.length :results} Результатов)
                         </NavLink>
                     </div>
                     {Card.slice(0, 1).map((item, index) => (

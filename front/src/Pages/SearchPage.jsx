@@ -1,16 +1,23 @@
-import {Images} from "../../Images.js";
 import Filter from "../Components/Filter.jsx";
 import StarsCarsCard from "../Components/StarsCarsCard.jsx";
 import {useEffect, useState} from "react";
+import {useLocation} from "react-router-dom";
 
 export default function SearchPage() {
+    const location = useLocation();
     const [slice, setSlice] = useState(6);
     const [carData, setCarData] = useState([]);
 
+    const filtredData = location.state?.carData;
+
     useEffect(() => {
-        fetch("http://localhost:3000/cars")
-            .then(res =>  res.json())
-            .then(data => setCarData(data))
+        if(filtredData) {
+            setCarData(filtredData);
+        }else{
+            fetch(`http://localhost:3000/cars`)
+                .then(res => res.json())
+                .then(data => setCarData(data))
+        }
     }, [])
 
     const handleClick = () => {

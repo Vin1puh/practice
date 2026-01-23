@@ -34,6 +34,36 @@ app.get('/cars/seller/:name', async (req, res) => {
     }
 });
 
+app.get('/api/filter-options', async (req, res) => {
+    try {
+        const queries = [
+            pool.query('SELECT DISTINCT category FROM car_info'),
+            pool.query('SELECT DISTINCT country FROM car_info'),
+            pool.query('SELECT DISTINCT mark FROM car_info'),
+            pool.query('SELECT DISTINCT model FROM car_info'),
+            pool.query('SELECT DISTINCT year FROM car_info'),
+            pool.query('SELECT DISTINCT price FROM car_info'),
+            pool.query('SELECT DISTINCT runned FROM car_info'),
+            pool.query('SELECT DISTINCT weight FROM car_info'),
+        ];
+
+        const results = await Promise.all(queries);
+
+        res.json({
+            category: results[0].rows.map(row => row.category),
+            country: results[1].rows.map(row => row.country),
+            mark: results[2].rows.map(row => row.mark),
+            model: results[3].rows.map(row => row.model),
+            year: results[4].rows.map(row => row.year),
+            price: results[5].rows.map(row => row.price),
+            runned: results[6].rows.map(row => row.runned),
+            weight: results[7].rows.map(row => row.weight),
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/cars/stars', async (req, res) => {
     try{
         const addtodor = await pool.query("SELECT * FROM car_info WHERE is_star = true ORDER BY id")
@@ -44,6 +74,71 @@ app.get('/cars/stars', async (req, res) => {
     }
 })
 
+app.post('/api/filter', async (req, res) => {
+    try {
+        const filters = req.body;
+        let query = 'SELECT * FROM car_info WHERE 1=1';
+        const params = [];
+        let paramIndex = 1;
+
+        if (filters.category) {
+            query += ` AND category = $${paramIndex}`;
+            params.push(filters.category);
+            paramIndex++;
+        }
+
+        if (filters.country) {
+            query += ` AND country = $${paramIndex}`;
+            params.push(filters.country);
+            paramIndex++;
+        }
+
+        if (filters.mark) {
+            query += ` AND mark = $${paramIndex}`;
+            params.push(filters.mark);
+            paramIndex++;
+        }
+
+        if (filters.model) {
+            query += ` AND model = $${paramIndex}`;
+            params.push(filters.model);
+            paramIndex++;
+        }
+
+        if (filters.year) {
+            query += ` AND year >= $${paramIndex}`;
+            params.push(filters.year);
+            paramIndex++;
+        }
+
+        if (filters.price) {
+            query += ` AND price <= $${paramIndex}`;
+            params.push(filters.price);
+            paramIndex++;
+        }
+
+        if (filters.runned) {
+            query += ` AND runned <= $${paramIndex}`;
+            params.push(filters.runned);
+            paramIndex++;
+        }
+
+        if (filters.weight) {
+            query += ` AND weight <= $${paramIndex}`;
+            params.push(filters.weight);
+            paramIndex++;
+        }
+
+        query += ' ORDER BY id';
+
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/cars', async (req, res) => {
     try{
         const addtodor = await pool.query("SELECT * FROM car_info ORDER BY id")
@@ -51,6 +146,60 @@ app.get('/cars', async (req, res) => {
     }
     catch(err){
         console.error(err);
+    }
+})
+
+app.post('/api/register', async (req, res) => {
+    try {
+        const { email, password, name } = req.body
+
+        const userExists = await pool.query(
+            'SELECT * FROM users WHERE email = $1',
+            [email]
+        )
+
+        if (userExists.rows.length > 0) {
+            return res.json({ success: false, message: 'Такой email уже есть' })
+        }
+        const newUser = await pool.query(
+            'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name',
+            [email, password, name]
+        )
+
+        res.json({
+            success: true,
+            user: newUser.rows[0]
+        })
+    } catch (error) {
+        res.json({ success: false, message: 'Ошибка сервера' })
+    }
+})
+
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, password } = req.body
+
+        const userResult = await pool.query(
+            'SELECT * FROM users WHERE email = $1 AND password = $2',
+            [email, password]
+        )
+
+        if (userResult.rows.length === 0) {
+            return res.json({ success: false, message: 'Неверный логин или пароль' })
+        }
+
+        const user = userResult.rows[0]
+
+        res.json({
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name
+            }
+        })
+    } catch (error) {
+        res.json({ success: false, message: 'Ошибка сервера' })
     }
 })
 
