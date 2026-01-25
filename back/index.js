@@ -149,9 +149,32 @@ app.get('/cars', async (req, res) => {
     }
 })
 
+app.post('/api/search', async (req, res) => {
+    try {
+        const { query } = req.body; // Получаем строку поиска
+
+        if (!query || query.trim() === '') {
+            return res.json([]);
+        }
+
+        const searchResult = await pool.query(
+            `SELECT * FROM car_info 
+             WHERE LOWER(mark) LIKE LOWER($1) 
+                OR LOWER(model) LIKE LOWER($2) 
+             ORDER BY id`,
+            [`%${query}%`, `%${query}%`]
+        );
+
+        res.json(searchResult.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.post('/api/register', async (req, res) => {
     try {
-        const { email, password, name } = req.body
+        const { email, password, name, second_name } = req.body
 
         const userExists = await pool.query(
             'SELECT * FROM users WHERE email = $1',
@@ -162,8 +185,8 @@ app.post('/api/register', async (req, res) => {
             return res.json({ success: false, message: 'Такой email уже есть' })
         }
         const newUser = await pool.query(
-            'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name',
-            [email, password, name]
+            'INSERT INTO users (email, password, name, second_name) VALUES ($1, $2, $3, $4) RETURNING id, email, name, second_name',
+            [email, password, name, second_name]
         )
 
         res.json({

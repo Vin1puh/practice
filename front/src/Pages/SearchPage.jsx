@@ -9,16 +9,36 @@ export default function SearchPage() {
     const [carData, setCarData] = useState([]);
 
     const filtredData = location.state?.carData;
+    const searchQuery = location.state?.searchQuery;
 
     useEffect(() => {
         if(filtredData) {
             setCarData(filtredData);
+        }else if(searchQuery){
+            performSearch(searchQuery);
         }else{
             fetch(`http://localhost:3000/cars`)
                 .then(res => res.json())
                 .then(data => setCarData(data))
         }
     }, [])
+
+    const performSearch = async (query) => {
+        try {
+            const response = await fetch('http://localhost:3000/api/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query })
+            });
+
+            const data = await response.json();
+            setCarData(data);
+        } catch (error) {
+            console.error('Ошибка поиска:', error);
+        }
+    };
 
     const handleClick = () => {
         setSlice((prev) => prev + 6);

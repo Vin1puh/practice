@@ -1,4 +1,4 @@
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {NavLink} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {Images} from "../../Images.js";
@@ -14,6 +14,15 @@ export default function Profile({count}) {
     const [isNewMessage, setNewMessage] = useState(false);
     const [cardData, setCardData] = useState([]);
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
+    const [registerName, setRegisterName] = useState('');
+    const [registerLastName, setRegisterLastName] = useState('');
+    const [registerEmail, setRegisterEmail] = useState('');
+    const [registerPassword, setRegisterPassword] = useState('');
+    const [error, setError] = useState('');
 
     count = 4
 
@@ -22,6 +31,74 @@ export default function Profile({count}) {
             .then(res => res.json())
             .then(data => setCardData(data))
     }, [cardData, setCardData]);
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        try {
+            const response = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: loginEmail,
+                    password: loginPassword
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                navigate('/profile/stars');
+                window.location.reload();
+            } else {
+                setError(data.message || 'Ошибка входа');
+            }
+        } catch (err) {
+            setError('Ошибка соединения с сервером');
+        }
+    };
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        try {
+            const response = await fetch('http://localhost:3000/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: registerEmail,
+                    password: registerPassword,
+                    name: registerName,
+                    second_name: registerLastName
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                navigate('/profile/stars');
+                window.location.reload();
+            } else {
+                setError(data.message || 'Ошибка регистрации');
+            }
+        } catch (err) {
+            setError('Ошибка соединения с сервером');
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        navigate('/profile/enter');
+        window.location.reload();
+    };
 
     const handleClick = () => {
         setSlice((prev) => prev + 9)
@@ -50,51 +127,102 @@ export default function Profile({count}) {
     return(
         <main>
             {location.pathname === "/profile/enter" ? (
-                <div className='w=1/2 md:w-3/10 h-[650px] my-32! flex flex-col items-center justify-between'>
+                <div className='w-2/3 lg:w-1/2 xl:w-3/10 h-[650px] my-32! flex flex-col items-center justify-between'>
                     <div className='bg-white rounded-2xl w-full h-9/10 flex items-center justify-center'>
                         <div className='flex flex-col items-center justify-between w-8/10 h-8/10'>
                             <h1 className='text-[5rem] font-bold'>Вход в акаунт</h1>
-                            <div className='w-full flex flex-col items-start justify-between w-full h-1/2'>
-                                <label htmlFor="" className='text-gray-500 text-[1.6rem]'>E-mail</label>
-                                <input type="email"
-                                       className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'/>
-                                <label htmlFor="" className='text-gray-500 text-[1.6rem]'>Пароль</label>
-                                <input type="password"
-                                       className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'/>
-                            </div>
-                            <button className='px-12! h-[60px] bg-[#009661] text-[2rem] text-white rounded-2xl uppercase'>Продолжить</button>
+                            <form onSubmit={handleLogin}
+                                  className='w-full flex flex-col items-start justify-between h-1/2'>
+                                <label htmlFor="email" className='text-gray-500 text-[1.6rem]'>E-mail</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={loginEmail}
+                                    onChange={(e) => setLoginEmail(e.target.value)}
+                                    className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'
+                                    required
+                                />
+                                <label htmlFor="password" className='text-gray-500 text-[1.6rem]'>Пароль</label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    value={loginPassword}
+                                    onChange={(e) => setLoginPassword(e.target.value)}
+                                    className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'
+                                    required
+                                />
+                                {error && <p className='text-red-500 text-[1.6rem] mt-2'>{error}</p>}
+                            </form>
+                            <button type='submit'
+                                    onClick={handleLogin}
+                                    className='px-12! h-[60px] bg-[#009661] text-[2rem] text-white rounded-2xl uppercase mt-4'>
+                                Продолжить
+                            </button>
                         </div>
                     </div>
-                    <h2 className='text-[2rem]'>Нет аккаунта? <NavLink to='/profile/register' className='text-[#009661] uppercase'>Рeгистрация</NavLink></h2>
+                    <h2 className='text-[2rem]'>Нет аккаунта? <NavLink to='/profile/register'
+                                                                       className='text-[#009661] uppercase'>Рeгистрация</NavLink>
+                    </h2>
                 </div>
             ) : location.pathname === "/profile/register" ? (
-                <div className='w-1/2 md:w-3/10 h-[900px] my-32! flex flex-col items-center justify-between'>
+                <div className='w-2/3 lg:w-1/2 xl:w-3/10 h-[900px] my-32! flex flex-col items-center justify-between'>
                     <div className='bg-white rounded-2xl w-full h-95/100 flex items-center justify-center'>
                         <div className='flex flex-col items-center justify-between w-8/10 h-9/10'>
                             <h1 className='text-[5rem] font-bold'>Регистрация</h1>
-                            <p className='text-gray-500 text-[2rem] text-center w-2/3 h-[60px]'>Заполните указаные поля, чтобы создать акаунт</p>
-                            <div className='w-full flex flex-col items-start justify-between w-full h-6/10'>
-                                <label htmlFor="" className='text-gray-500 text-[1.6rem]'>Имя</label>
-                                <input type="text"
-                                       className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'/>
-                                <label htmlFor="" className='text-gray-500 text-[1.6rem]'>Фамилия</label>
-                                <input type="text"
-                                       className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'/>
-                                <label htmlFor="" className='text-gray-500 text-[1.6rem]'>E-mail</label>
-                                <input type="email"
-                                       className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'/>
-                                <label htmlFor="" className='text-gray-500 text-[1.6rem]'>Придумайте пароль</label>
-                                <input type="password"
-                                       className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'/>
-                            </div>
-                            <div className='flex justify-between'>
-                                <CustomInput border='gray' bg='green' checked='green' />
-                                <p className='text-gray-500 text-[1.6rem] w-95/100'>Авторизуясь, Вы принимаете
-                                    <NavLink to='/' className='text-[#009661]'> Условия использования</NavLink> и
-                                    <NavLink to='/' className='text-[#009661]'> Заявлением о конфиденциальности</NavLink> NOVO</p>
-                            </div>
-                            <button
-                                className='px-12! h-[60px] bg-[#009661] text-[2rem] text-white rounded-2xl uppercase'>Продолжить
+                            <p className='text-gray-500 text-[2rem] text-center w-2/3 h-[60px]'>Заполните указаные поля,
+                                чтобы создать акаунт</p>
+                            <form onSubmit={handleRegister}
+                                  className='w-full flex flex-col items-start justify-between w-full h-6/10'>
+                                <label htmlFor="firstName" className='text-gray-500 text-[1.6rem]'>Имя</label>
+                                <input
+                                    type="text"
+                                    id="firstName"
+                                    value={registerName}
+                                    onChange={(e) => setRegisterName(e.target.value)}
+                                    className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'
+                                    required
+                                />
+                                <label htmlFor="lastName" className='text-gray-500 text-[1.6rem]'>Фамилия</label>
+                                <input
+                                    type="text"
+                                    id="lastName"
+                                    value={registerLastName}
+                                    onChange={(e) => setRegisterLastName(e.target.value)}
+                                    className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'
+                                    required
+                                />
+                                <label htmlFor="regEmail" className='text-gray-500 text-[1.6rem]'>E-mail</label>
+                                <input
+                                    type="email"
+                                    id="regEmail"
+                                    value={registerEmail}
+                                    onChange={(e) => setRegisterEmail(e.target.value)}
+                                    className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'
+                                    required
+                                />
+                                <label htmlFor="regPassword" className='text-gray-500 text-[1.6rem]'>Придумайте
+                                    пароль</label>
+                                <input
+                                    type="password"
+                                    id="regPassword"
+                                    value={registerPassword}
+                                    onChange={(e) => setRegisterPassword(e.target.value)}
+                                    className='w-full h-[60px] border-2 border-gray-200 px-8! outline-0 text-[2rem]'
+                                    required
+                                />
+                                <div className='flex justify-between mt-4'>
+                                    <CustomInput border='gray' bg='green' checked='green'/>
+                                    <p className='text-gray-500 text-[1.6rem] w-95/100'>Авторизуясь, Вы принимаете
+                                        <NavLink to='/' className='text-[#009661]'> Условия использования</NavLink> и
+                                        <NavLink to='/' className='text-[#009661]'> Заявлением о
+                                            конфиденциальности</NavLink> NOVO</p>
+                                </div>
+                                {error && <p className='text-red-500 text-[1.6rem] mt-2'>{error}</p>}
+                            </form>
+                            <button type='submit'
+                                    onClick={handleRegister}
+                                    className='px-12! h-[60px] bg-[#009661] text-[2rem] text-white rounded-2xl uppercase mt-4'>
+                                Продолжить
                             </button>
                         </div>
                     </div>
@@ -106,9 +234,7 @@ export default function Profile({count}) {
                 <>
                     <div className='w-full h-[230px] flex justify-center items-center bg-white'>
                         <div className='w-95/100 lg:w-7/10 h-full flex justify-between items-start flex-col'>
-                            <div className='h-[50px]'>
-
-                            </div>
+                            <div className='h-[50px]'></div>
                             {location.pathname === '/profile/stars' && (
                                 <h1 className='text-[5rem] font-bold'>Избранное</h1>
                             )}
@@ -201,7 +327,9 @@ export default function Profile({count}) {
                         <>
                             <div className='w-95/100 lg:w-7/10 h-[70px] flex flex-col justify-between items-start'>
                                 <h2 className='text-[3rem]'>Профиль mail@gmail.com</h2>
-                                <NavLink to='/profile/enter' className='text-[2rem] text-[#009661]'>Выйти из аккаунта</NavLink>
+                                <button onClick={handleLogout} className='text-[2rem] text-[#009661]'>
+                                    Выйти из аккаунта
+                                </button>
                             </div>
                             <div className='h-[100px]'></div>
                             <SettingsDetails title='Настройки акаунта' mail='email@gmail.com'/>
