@@ -9,6 +9,7 @@ import Profile from "./Pages/Profile.jsx";
 import CarPage from "./Pages/CarPage.jsx";
 import SearchPage from "./Pages/SearchPage.jsx";
 import SellerPage from "./Pages/SellerPage.jsx";
+import AdminPanel from "./Pages/AdminPanel.jsx";
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path='/car_page' element={<CarPage/>}/>
                 <Route path='/search' element={<SearchPage/>}/>
                 <Route path='/seller_page' element={<SellerPage/>}/>
+                <Route path='/AdminPanel' element={<AdminPanel />}/>
             </Routes>
             <Footer/>
         </BrowserRouter>

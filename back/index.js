@@ -172,6 +172,41 @@ app.post('/api/search', async (req, res) => {
     }
 });
 
+app.post('/api/create', async (req, res) => {
+    try{
+        const {
+            mark,
+            model,
+            image,
+            seller,
+            category,
+            year,
+            runned,
+            country,
+            weight,
+            price,
+            brutto_price,
+            rewiew,
+            stat,
+            location,
+            head_stat
+        } = req.body;
+
+        const newCar = await pool.query(
+            'INSERT INTO car_info (mark, model, image, seller, category, year, runned, country, weight, price, brutto_price, rewiew, stat, location, head_stat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING mark, model, image, seller, category, year, runned, country, weight, price, brutto_price, rewiew, stat, location, head_stat',
+            [mark, model, image, seller, category, year, runned, country, weight, price, brutto_price, rewiew, stat, location, head_stat]
+        )
+
+        res.json({
+            success: true,
+            car: newCar.rows[0],
+        });
+    }
+    catch (err){
+        console.error(err)
+    }
+})
+
 app.post('/api/register', async (req, res) => {
     try {
         const { email, password, name, second_name } = req.body

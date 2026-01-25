@@ -7,6 +7,7 @@ export default function Header({count}) {
     const [isNewMessage, setNewMessage] = useState(false);
     const [isSearch, setSearch] = useState(false);
     const [user, setUser] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
@@ -19,6 +20,12 @@ export default function Header({count}) {
         }
         setNewMessage(true);
     }, []);
+
+    useEffect(() => {
+        if (user !== null && user.name === 'admin' && user.email === 'boris.lshchenko228@gmail.com' && user.id === 2) {
+            setIsAdmin(true);
+        }
+    }, [user])
 
     const handleHover = () => {
         setHover(true);
@@ -94,16 +101,20 @@ export default function Header({count}) {
 
                                     {isHover && (
                                         <div
-                                            className='absolute top-full bg-white w-[240px] h-[150px] rounded-[1rem] flex flex-col overflow-hidden shadow-lg'>
+                                            className='absolute top-full bg-white w-[240px] max-h-[200px] rounded-[1rem] flex flex-col overflow-hidden shadow-lg'>
                                             <NavLink to='/profile/stars'
-                                                     className='w-full h-1/3 text-gray-500 text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>Избранное</NavLink>
+                                                     className='w-full h-[50px] text-gray-500 text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>Избранное</NavLink>
                                             <NavLink to='/profile/messages'
-                                                     className='bg-[#8B959E]/[0.2] w-full h-1/3 text-black text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>Сообщения
+                                                     className='bg-[#8B959E]/[0.2] w-full h-[50px] text-black text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>Сообщения
                                                 {isNewMessage && (
                                                     <span className='text-[#009661]'>⠀({count} новых)</span>)}
                                             </NavLink>
+                                            {isAdmin && (
+                                                <NavLink to='/AdminPanel'
+                                                         className='w-full h-[50px] text-gray-500 text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>Админка</NavLink>
+                                            )}
                                             <button onClick={handleLogout}
-                                                    className='w-full h-1/3 text-red-500 text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>
+                                                    className='w-full h-[50px] text-red-500 text-[1.6rem] flex items-center justify-center hover:bg-gray-100'>
                                                 Выйти
                                             </button>
                                         </div>
