@@ -13,8 +13,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 const pool = new Pool({
     user: process.env.PG_USER,
-    password: '13579Boris1337',
-    database: 'new',
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_NAME,
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
 })

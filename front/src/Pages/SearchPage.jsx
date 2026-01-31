@@ -8,7 +8,7 @@ export default function SearchPage() {
     const location = useLocation();
     const [slice, setSlice] = useState(6);
     const [carData, setCarData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const filtredData = location.state?.carData;
     const searchQuery = location.state?.searchQuery;
@@ -17,16 +17,14 @@ export default function SearchPage() {
         try{
             if(filtredData) {
                 setCarData(filtredData);
-                setIsLoading(true)
             }else if(searchQuery){
                 performSearch(searchQuery);
-                setIsLoading(true)
             }else{
                 fetch(`http://localhost:3000/cars`)
                     .then(res => res.json())
                     .then(data => setCarData(data))
-                setIsLoading(true)
             }
+            setIsLoading(true)
         }catch(err) {
             setIsLoading(false);
         }

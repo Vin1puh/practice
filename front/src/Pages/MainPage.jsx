@@ -13,7 +13,7 @@ export default function MainPage() {
         {id: 4, label: 'Погрузочное оборудование'},
     ]
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [results, setResults] = useState();
     const [isActive, setIsActive] = useState(1);
     const [slice, setSlice] = useState(8);

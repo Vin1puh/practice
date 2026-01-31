@@ -14,7 +14,7 @@ export default function Profile({count}) {
     const [messageSlice, setMessageSlice] = useState(10);
     const [isNewMessage, setNewMessage] = useState(false);
     const [cardData, setCardData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
 
