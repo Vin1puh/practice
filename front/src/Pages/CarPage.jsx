@@ -3,6 +3,7 @@ import {NavLink, useLocation} from "react-router-dom";
 import CarReview from "../Components/CarReview.jsx";
 import {useEffect, useState} from "react";
 import TopCarsCard from "../Components/TopCarsCard.jsx";
+import ErrorPage from "./404.jsx";
 
 export default function CarPage() {
     const location = useLocation();
@@ -38,7 +39,7 @@ export default function CarPage() {
     return (
         <main>
             {isLoading ? (
-                <div className="flex justify-center items-center h-[586px] text-[#009661] text-[6rem]">Error 404</div>
+                <ErrorPage />
             ) : (
                 <>
                     <div className='h-[50px]'></div>

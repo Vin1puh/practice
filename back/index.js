@@ -207,6 +207,24 @@ app.post('/api/create', async (req, res) => {
     }
 })
 
+app.put('/api/user/:email', async (req, res) => {
+    try{
+        const { email } = req.params;
+        const { newEmail } = req.body;
+        const updateUser = await pool.query("UPDATE users SET email = $2 WHERE email = $1 RETURNING *", [email, newEmail]);
+        res.json({
+            success: true,
+            newEmail: updateUser.rows[0],
+        });
+    }
+    catch(err){
+        console.error(err);
+        res.json({
+            success: false,
+        })
+    }
+})
+
 app.post('/api/register', async (req, res) => {
     try {
         const { email, password, name, second_name } = req.body

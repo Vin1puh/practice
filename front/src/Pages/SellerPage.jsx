@@ -3,6 +3,7 @@ import Filter from "../Components/Filter.jsx";
 import StarsCarsCard from "../Components/StarsCarsCard.jsx";
 import {useEffect, useState} from "react";
 import {NavLink, useLocation} from "react-router-dom";
+import ErrorPage from "./404.jsx";
 
 export default function SellerPage() {
     const location = useLocation();
@@ -30,7 +31,7 @@ export default function SellerPage() {
     return (
         <main>
             {isLoading ? (
-                <div className="flex justify-center items-center h-[586px] text-[#009661] text-[6rem]">Error 404</div>
+                <ErrorPage/>
             ) : (
                 <>
                     <div className='w-full bg-white h-[280px] flex justify-center items-center'>
@@ -76,7 +77,8 @@ export default function SellerPage() {
                             <h1 className='text-[3rem]'>Продавец {dataFromState.seller}</h1>
                             <div className='w-95/100 lg:w-8/10 flex flex-col items-start justify-between'>
                                 <h2 className='text-[2rem] mb-4!'>Кто таки {dataFromState.seller}?</h2>
-                                <p className='text-[1.6rem] text-gray-500'>«{dataFromState.seller}» – універсальна лізингова
+                                <p className='text-[1.6rem] text-gray-500'>«{dataFromState.seller}» – універсальна
+                                    лізингова
                                     компанія, входить до складу
                                     європейської фінансової групи OTP Group, яка протягом десятиліть має надійну
                                     репутацію в усій Европі.
