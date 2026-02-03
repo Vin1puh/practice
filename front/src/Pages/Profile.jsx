@@ -8,13 +8,15 @@ import CustomInput from "../Components/CustomInput.jsx";
 import MessageLine from "../Components/MessageLine.jsx";
 import ErrorPage from "./404.jsx";
 
-export default function Profile({count}) {
+export default function Profile() {
     const [slice, setSlice] = useState(9);
     const [oldMessageSlice, setOldMessageSlice] = useState(0);
     const [messageSlice, setMessageSlice] = useState(10);
     const [isNewMessage, setNewMessage] = useState(false);
     const [cardData, setCardData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [messages, setMessages] = useState([]);
+    const [count, setCount] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -25,8 +27,6 @@ export default function Profile({count}) {
     const [registerEmail, setRegisterEmail] = useState('');
     const [registerPassword, setRegisterPassword] = useState('');
     const [error, setError] = useState('');
-
-    count = 4
 
     const localUser = localStorage.getItem('user');
     const savedUser = JSON.parse(localUser);
@@ -42,6 +42,21 @@ export default function Profile({count}) {
         }
 
     }, [cardData, setCardData]);
+
+    useEffect(() => {
+        if(savedUser) {
+            fetch(`http://localhost:3000/api/get_messages/${savedUser.id}`)
+                .then(res => res.json())
+                .then(data => setMessages(data.messages))
+            try{
+                const newMessage = messages.filter(message => message.is_new === true);
+                setCount(newMessage.length);
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+    }, [savedUser])
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -113,24 +128,37 @@ export default function Profile({count}) {
     }
     const handleLeft = () => {
         if (messageSlice > 10) {
-            console.log(oldMessageSlice)
             setOldMessageSlice((prev) => prev - 10)
-            console.log(oldMessageSlice)
             setMessageSlice((prev) => prev - 10);
         }
     }
     const handleRight = () => {
-        if (messageSlice < 20) {
-            console.log(oldMessageSlice)
+        if (messageSlice < messages.length) {
             setOldMessageSlice((prev) => prev + 10)
-            console.log(oldMessageSlice)
             setMessageSlice((prev) => prev + 10);
         }
     }
 
+    const handleReaded = async (e) => {
+        try{
+            await fetch(`http://localhost:3000/api/update_messages/${e}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+        }catch(err){
+            console.error(err)
+        }
+    }
+
     useEffect(() => {
-        setNewMessage(true);
-    }, [isNewMessage, setNewMessage]);
+        if(count > 0){
+            setNewMessage(true);
+        }else{
+            setNewMessage(false)
+        }
+    }, [count]);
 
     return (
         <>
@@ -324,10 +352,8 @@ export default function Profile({count}) {
                                     <div className='h-[50px]'></div>
                                     <div
                                         className='w-95/100 lg:w-7/10 max-h-[700px] bg-white rounded-2xl flex flex-col items-center'>
-                                        {[...Array(17)].slice(oldMessageSlice, messageSlice).map((_, index) => (
-                                            <MessageLine key={index} user='Игорь Игорьевич'
-                                                         name='SCHWARZMUELLER 3Achs Stahl path SCHWARZMUELLER 3Achs Stahl'
-                                                         count={count} index={index} time='19:56'/>
+                                        {messages.slice(oldMessageSlice, messageSlice).map((item, index) => (
+                                            <MessageLine onClick={() => handleReaded(item.id)} key={index} {...item}/>
                                         ))}
                                     </div>
                                     <div className='h-[50px]'></div>

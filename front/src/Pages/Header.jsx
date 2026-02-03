@@ -2,31 +2,43 @@ import {NavLink, useNavigate} from "react-router-dom";
 import {Images} from '../../Images.js'
 import {useEffect, useState} from "react";
 
-export default function Header({count}) {
+export default function Header() {
     const [isHover, setHover] = useState(false);
     const [isNewMessage, setNewMessage] = useState(false);
     const [isSearch, setSearch] = useState(false);
     const [user, setUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [count, setCount] = useState(null);
+    const [messages, setMessages] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
-    count = 4
     const savedUser = localStorage.getItem('user');
     useEffect(() => {
         if (savedUser) {
             setUser(JSON.parse(savedUser));
         }
-        console.log(user)
-        console.log(savedUser);
-        setNewMessage(true);
     }, [savedUser]);
 
     useEffect(() => {
+        if(user) {
+            fetch(`http://localhost:3000/api/get_messages/${user.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    setMessages(data.messages)
+                    const newMessage = messages.filter(message => message.is_new === true);
+                    setCount(newMessage.length);
+                })
+        }
         if (user !== null && user.name === 'LaughTale' && user.email === 'boris.lshchenko228@gmail.com') {
             setIsAdmin(true);
         }
-    }, [user])
+        if(count > 0){
+            setNewMessage(true)
+        }else{
+            setNewMessage(false)
+        }
+    }, [user, messages, count])
 
     const handleHover = () => {
         setHover(true);

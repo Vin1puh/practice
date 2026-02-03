@@ -1,6 +1,6 @@
 import {useState} from "react";
 
-export default function AdminPanel(){
+export default function AdminPanel() {
     const [setMark, setSetMark] = useState("")
     const [setModel, setSetModel] = useState("")
     const [setImage, setSetImage] = useState("")
@@ -16,6 +16,10 @@ export default function AdminPanel(){
     const [setStat, setSetStat] = useState("")
     const [setLocation, setSetLocation] = useState("")
     const [setHead, setSetHead] = useState("")
+
+    const [Message, setMessage] = useState("")
+    const [userId, setUserId] = useState("")
+    const [senderId, setSenderId] = useState("")
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -71,11 +75,49 @@ export default function AdminPanel(){
         }
     };
 
+    const handleCreateMessage = async (e) => {
+        e.preventDefault();
+
+        try {
+            const responseUser = await fetch(`http://localhost:3000/api/get_user/${senderId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+
+            const userData = await responseUser.json();
+            const response = await fetch('http://localhost:3000/api/create_messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender_name: userData.sender.name,
+                    message: Message,
+                    user_id: userId,
+                    sender_id: senderId,
+                })
+            })
+            const data = await response.json()
+            if (data.success) {
+                setMessage("")
+                setSenderId("")
+                setUserId("")
+            } else {
+                console.log(data.success)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
     return (
         <main>
             <div className='h-[50px]'></div>
             <section className='w-7/10 flex items-center justify-center'>
-                <form action="" className='w-full h-[900px] rounded-2xl bg-white flex flex-col justify-center items-center'>
+                <form action=""
+                      className='w-full h-[900px] rounded-2xl bg-white flex flex-col justify-center items-center'>
                     <div className='flex flex-col items-center justify-between w-95/100 h-9/10'>
                         <h1 className='text-[4rem]'>Создание карточек</h1>
                         <div className='w-full grid grid-cols-2 gap-8'>
@@ -158,6 +200,36 @@ export default function AdminPanel(){
                         <button className='px-8! h-[60px] bg-[#009661] rounded-2xl text-[2rem] text-white'
                                 onClick={handleCreate}>
                             Создать карточку
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <div className='h-[50px]'></div>
+            <section className='w-7/10 flex items-center justify-center'>
+                <form action=""
+                      className='w-full h-[400px] rounded-2xl bg-white flex flex-col justify-center items-center'>
+                    <div className='flex flex-col items-center justify-between w-95/100 h-9/10'>
+                        <h1 className='text-[4rem]'>Создание сообщений</h1>
+                        <div className='w-full grid grid-cols-2 gap-8'>
+                            <input type="text"
+                                   value={Message}
+                                   onChange={(e) => setMessage(e.target.value)}
+                                   className='w-full h-[60px] border-[1px] border-gray-200 text-[2rem] outline-0 pl-8!'
+                                   placeholder='Сообщение'/>
+                            <input type="text"
+                                   value={userId}
+                                   onChange={(e) => setUserId(e.target.value)}
+                                   className='w-full h-[60px] border-[1px] border-gray-200 text-[2rem] outline-0 pl-8!'
+                                   placeholder='id получателя'/>
+                            <input type="text"
+                                   value={senderId}
+                                   onChange={(e) => setSenderId(e.target.value)}
+                                   className='w-full h-[60px] border-[1px] border-gray-200 text-[2rem] outline-0 pl-8!'
+                                   placeholder='id отправителя'/>
+                        </div>
+                        <button className='px-8! h-[60px] bg-[#009661] rounded-2xl text-[2rem] text-white'
+                                onClick={handleCreateMessage}>
+                            Создать сообщение
                         </button>
                     </div>
                 </form>

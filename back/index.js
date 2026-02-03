@@ -292,6 +292,72 @@ app.post('/api/login', async (req, res) => {
     }
 })
 
+app.post('/api/create_messages', async (req, res) => {
+    try{
+        const { sender_name, message, user_id, sender_id } = req.body;
+        const newMessage = await pool.query('INSERT INTO messages (sender_name, message, user_id, sender_id, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
+            [sender_name, message, user_id, sender_id])
+        res.json({
+            success: true,
+            created: newMessage.rows[0]
+        })
+    }catch(err){
+        res.json({
+            success: false
+        })
+        console.error(err)
+    }
+})
+
+app.get('/api/get_messages/:user_id', async (req, res) => {
+    try{
+        const { user_id } = req.params;
+        const getMessages = await pool.query("SELECT * FROM messages WHERE user_id = $1", [user_id]);
+        res.json({
+            success: true,
+            messages: getMessages.rows
+        });
+    }catch (e) {
+        console.error(e)
+        res.json({
+            success: false
+        })
+    }
+})
+
+app.put('/api/update_messages/:id', async (req, res) => {
+    try{
+        const { id } = req.params
+        const updateMessage = await pool.query('UPDATE messages SET is_new = false WHERE id = $1', [id])
+        res.json({
+            success: true,
+            updated: updateMessage.rows[0]
+        })
+    }catch(err){
+        res.json({
+            success: false
+        })
+        console.error(err)
+    }
+})
+
+app.get('/api/get_user/:user_id', async (req, res) => {
+    try{
+        const { user_id } = req.params;
+        const getUser = await pool.query('SELECT * FROM users WHERE id = $1', [user_id]);
+
+        res.json({
+            success: true,
+            sender: getUser.rows[0]
+        });
+    }catch(err){
+        console.error(err)
+        res.json({
+            success: false
+        })
+    }
+})
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
