@@ -151,7 +151,7 @@ app.get('/cars', async (req, res) => {
 
 app.post('/api/search', async (req, res) => {
     try {
-        const { query } = req.body; // Получаем строку поиска
+        const { query } = req.body;
 
         if (!query || query.trim() === '') {
             return res.json([]);
@@ -237,9 +237,13 @@ app.post('/api/register', async (req, res) => {
         if (userExists.rows.length > 0) {
             return res.json({ success: false, message: 'Такой email уже есть' })
         }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const newUser = await pool.query(
-            'INSERT INTO users (email, password, name, second_name) VALUES ($1, $2, $3, $4) RETURNING id, email, name, second_name',
-            [email, password, name, second_name]
+            'INSERT INTO users (email, password, name, second_name, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
+            [email, hashedPassword, name, second_name]
         )
 
         res.json({
@@ -256,8 +260,8 @@ app.post('/api/login', async (req, res) => {
         const { email, password } = req.body
 
         const userResult = await pool.query(
-            'SELECT * FROM users WHERE email = $1 AND password = $2',
-            [email, password]
+            'SELECT * FROM users WHERE email = $1',
+            [email]
         )
 
         if (userResult.rows.length === 0) {
@@ -266,12 +270,21 @@ app.post('/api/login', async (req, res) => {
 
         const user = userResult.rows[0]
 
+        const isPasswordValid = await bcrypt.compare(password, user.password)
+
+        if(!isPasswordValid) {
+            return res.json({
+                success: false,
+            })
+        }
+
         res.json({
             success: true,
             user: {
                 id: user.id,
                 email: user.email,
-                name: user.name
+                name: user.name,
+                second_name: user.second_name
             }
         })
     } catch (error) {

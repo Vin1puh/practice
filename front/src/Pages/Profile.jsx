@@ -64,7 +64,6 @@ export default function Profile({count}) {
             if (data.success) {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 navigate('/profile/stars');
-                window.location.reload();
             } else {
                 setError(data.message || 'Ошибка входа');
             }
@@ -87,7 +86,7 @@ export default function Profile({count}) {
                     email: registerEmail,
                     password: registerPassword,
                     name: registerName,
-                    second_name: registerLastName
+                    second_name: registerLastName,
                 })
             });
 
@@ -96,7 +95,6 @@ export default function Profile({count}) {
             if (data.success) {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 navigate('/profile/stars');
-                window.location.reload();
             } else {
                 setError(data.message || 'Ошибка регистрации');
             }
@@ -108,7 +106,6 @@ export default function Profile({count}) {
     const handleLogout = () => {
         localStorage.removeItem('user');
         navigate('/profile/enter');
-        window.location.reload();
     };
 
     const handleClick = () => {

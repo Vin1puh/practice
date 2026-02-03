@@ -12,17 +12,18 @@ export default function Header({count}) {
     const navigate = useNavigate();
 
     count = 4
-
+    const savedUser = localStorage.getItem('user');
     useEffect(() => {
-        const savedUser = localStorage.getItem('user');
         if (savedUser) {
             setUser(JSON.parse(savedUser));
         }
+        console.log(user)
+        console.log(savedUser);
         setNewMessage(true);
-    }, []);
+    }, [savedUser]);
 
     useEffect(() => {
-        if (user !== null && user.name === 'admin' && user.email === 'boris.lshchenko228@gmail.com' && user.id === 2) {
+        if (user !== null && user.name === 'LaughTale' && user.email === 'boris.lshchenko228@gmail.com') {
             setIsAdmin(true);
         }
     }, [user])
@@ -66,7 +67,6 @@ export default function Header({count}) {
         localStorage.removeItem('user');
         setUser(null);
         navigate('/');
-        window.location.reload();
     }
 
     return (
