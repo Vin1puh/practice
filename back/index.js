@@ -312,7 +312,7 @@ app.post('/api/create_messages', async (req, res) => {
 app.get('/api/get_messages/:user_id', async (req, res) => {
     try{
         const { user_id } = req.params;
-        const getMessages = await pool.query("SELECT * FROM messages WHERE user_id = $1", [user_id]);
+        const getMessages = await pool.query('SELECT * FROM messages WHERE user_id = $1', [user_id]);
         res.json({
             success: true,
             messages: getMessages.rows
@@ -334,6 +334,23 @@ app.put('/api/update_messages/:id', async (req, res) => {
             updated: updateMessage.rows[0]
         })
     }catch(err){
+        res.json({
+            success: false
+        })
+        console.error(err)
+    }
+})
+
+app.get('/api/get_userByName/:name', async (req, res) => {
+    try{
+        const {name} = req.params;
+        const getUser = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
+
+        res.json({
+            success: true,
+            user: getUser.rows[0]
+        })
+    }catch (err){
         res.json({
             success: false
         })

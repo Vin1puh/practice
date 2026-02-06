@@ -12,23 +12,28 @@ export default function CarPage() {
     const [likeACar, setLikeACar] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    const [write, setWrite] = useState(false);
+    const [user, setUser] = useState('');
+    const [sellerData, setSellerData] = useState([]);
+    const [messageFromSeller, setMessageFromSeller] = useState('');
 
     const dataFromState = location.state?.carData
+    const localUser = localStorage.getItem("user");
 
     useEffect(() => {
         fetch(`http://localhost:3000/cars`)
             .then(res => res.json())
             .then(data => setLikeACar(data))
-        if(dataFromState){
+        if (dataFromState) {
             setCarData(dataFromState);
             setIsLoading(false);
-        }
-        else{
+        } else {
             setIsLoading(true);
         }
-        if(window.innerWidth <= 768){
+        setUser(JSON.parse(localUser))
+        if (window.innerWidth <= 768) {
             setIsMobile(true);
-        }else{
+        } else {
             setIsMobile(false);
         }
     }, [location]);
@@ -36,10 +41,49 @@ export default function CarPage() {
     const handleClick = () => {
         setClicked(!isClicked);
     }
+
+    const handleWrite = () => {
+        setWrite(!write);
+    }
+
+    const handleUpload = async (e) => {
+        e.preventDefault();
+
+        try {
+            const seller = await fetch(`http://localhost:3000/api/get_userByName/${carData.seller}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            const sellerdata = await seller.json();
+            setSellerData(sellerdata.user)
+            const result = await fetch('http://localhost:3000/api/create_messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    sender_name: user.name,
+                    message: messageFromSeller,
+                    user_id: sellerData.id,
+                    sender_id: user.id,
+                })
+            })
+            const data = await result.json();
+            if (data.success) {
+                setMessageFromSeller('')
+            } else {
+                console.log(data.success)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
     return (
         <main>
             {isLoading ? (
-                <ErrorPage />
+                <ErrorPage/>
             ) : (
                 <>
                     <div className='h-[50px]'></div>
@@ -48,10 +92,14 @@ export default function CarPage() {
                             <div className='flex flex-col justify-between items-center w-full h-[600px]'>
                                 <img className='w-full h-3/4 rounded-2xl object-cover' src={carData.image} alt=""/>
                                 <div className='flex justify-between items-center w-full h-1/5'>
-                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image} alt=""/>
-                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image} alt=""/>
-                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image} alt=""/>
-                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image} alt=""/>
+                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image}
+                                         alt=""/>
+                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image}
+                                         alt=""/>
+                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image}
+                                         alt=""/>
+                                    <img className='h-full max-w-10/45 rounded-2xl object-cover' src={carData.image}
+                                         alt=""/>
                                 </div>
                             </div>
                             <div className='h-[50px]'></div>
@@ -91,7 +139,8 @@ export default function CarPage() {
                                                     позиции продавца {carData.seller}</NavLink>
                                             </div>
                                         </div>
-                                        <div className='w-full fixed bottom-0 h-[105px] z-11 flex items-center justify-center bg-white rounded-[1rem]'>
+                                        <div
+                                            className='w-full fixed bottom-0 h-[105px] z-11 flex items-center justify-center bg-white rounded-[1rem]'>
                                             <div className='w-9/10 h-7/10 flex items-center justify-between'>
                                                 <h3 className='text-[4rem] text-[#009661]'>{carData.price}</h3>
                                                 <div className='w-10/25 flex h-full justify-between items-center'>
@@ -109,7 +158,7 @@ export default function CarPage() {
                                 </>
                             )}
                             <div className='w-full flex flex-col items-start justify-between'>
-                            <h1 className='text-[3rem]'>Обзор транспортного средства</h1>
+                                <h1 className='text-[3rem]'>Обзор транспортного средства</h1>
                                 <div className='h-[30px]'></div>
                                 <div className='w-full flex flex-col items-center justify-between'>
                                     <CarReview index={0} statsName='Категория' stats={carData.category}/>
@@ -185,9 +234,30 @@ export default function CarPage() {
                                     <div className='w-9/10 h-7/10 flex items-center justify-between'>
                                         <h3 className='text-[4rem] text-[#009661]'>{carData.price}</h3>
                                         <button
+                                            onClick={handleWrite}
                                             className='h-full w-1/2 bg-[#009661] text-white rounded-2xl text-[1.8rem] uppercase'>Написать
                                             продавцу
                                         </button>
+                                        {write && (
+                                            <div
+                                                className='w-4/10 h-[100px] fixed z-9 flex flex-col items-center justify-around bg-white rounded-2xl left-1/3'>
+                                                <div
+                                                    className='h-1/4 w-9/10 flex items-center justify-end text-[1.5rem] cursor-pointer'
+                                                    onClick={handleWrite}>close
+                                                </div>
+                                                <div
+                                                    className='w-9/10 h-1/2 border-[1px] text-[2rem] border-gray-500 flex items-center justify-around'>
+                                                    <input value={messageFromSeller}
+                                                           onChange={(e) => setMessageFromSeller(e.target.value)}
+                                                           className='w-7/10 h-2/3 outline-0'
+                                                           type="text" placeholder='задайте свой вопрос продавцу'/>
+                                                    <button onClick={handleUpload}
+                                                            className='w-2/10 h-3/4 uppercase bg-[#009661] text-white rounded-2xl'>отправить
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
